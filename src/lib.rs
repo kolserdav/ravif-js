@@ -1,6 +1,7 @@
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
 
-fn main() {
+#[napi]
+pub fn say_hello() {
     println!("Hello, world!");
 }

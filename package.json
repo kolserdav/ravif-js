@@ -6,6 +6,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "main": "./dist/index.node",
+  "types": "./dist/index.d.ts",
   "devDependencies": {
     "@napi-rs/cli": "^1.0.0"
   },
