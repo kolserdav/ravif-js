@@ -1,0 +1,19 @@
+{
+  "name": "ravif",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@napi-rs/cli": "^1.0.0"
+  },
+  "napi": {
+    "name": "ravif-js"
+  },
+  "scripts": {
+    "build": "napi build --release",
+    "build:debug": "napi build"
+  }
+}
