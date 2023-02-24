@@ -22,6 +22,17 @@ impl<'a> AsRef<str> for Error {
     }
 }
 
+#[derive(Debug)]
+#[napi(constructor)]
+pub struct Test {
+    pub test: bool,
+}
+
+#[napi]
+pub fn say_hello(args: This<&Test>) {
+    println!("{:?}", args);
+}
+
 #[napi(constructor)]
 pub struct EncoderConfig {
     pub quality: f64,

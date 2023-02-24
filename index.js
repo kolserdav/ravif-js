@@ -1,5 +1,7 @@
-const { encodeImage } = require("./ravif-js.node");
+const { encodeImage, sayHello } = require("./ravif-js.node");
 
+sayHello({ test: true });
+/*
 encodeImage({
   quality: 1,
   speed: 2,
@@ -7,3 +9,4 @@ encodeImage({
   dirty_alpha: false,
   threads: 3,
 });
+*/
