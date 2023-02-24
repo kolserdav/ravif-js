@@ -1,6 +1,9 @@
 use imgref::ImgVec;
-use load_image::{export::imgref::ImgVecKind, load_data, Error as LoadImageError};
-use napi::{bindgen_prelude::*, Error as NapiError, JsTypedArray};
+use load_image::{
+    export::{imgref::ImgVecKind, rgb::ComponentMap},
+    load_data,
+};
+use napi::{bindgen_prelude::*, Error as NapiError, JsBoolean, JsTypedArray};
 use napi_derive::napi;
 use ravif::{AlphaColorMode, ColorSpace, EncodedImage, Encoder, RGBA8};
 use std::{
@@ -11,49 +14,25 @@ use std::{
 };
 
 #[derive(Debug)]
-struct Error(NapiError);
+pub struct Error(NapiError);
 
-impl AsRef<str> for Error {
+impl<'a> AsRef<str> for Error {
     fn as_ref(&self) -> &str {
-        format!("{:?}", self).as_str()
+        self.as_ref()
     }
 }
 
-#[napi]
-pub fn say_hello() {
-    println!("Hello, world!");
-}
-
-#[napi(js_name = "Client")]
+#[napi(constructor)]
 pub struct EncoderConfig {
-    quality: f32,
-    speed: u8,
-    alpha_quality: f32,
-    dirty_alpha: bool,
-    threads: usize,
-}
-
-#[napi(js_name = "Keys")]
-pub struct JsKeys {
-    keys: Keys,
+    pub quality: f64,
+    pub speed: u8,
+    pub alpha_quality: f64,
+    pub dirty_alpha: bool,
+    pub threads: u32,
 }
 
 #[napi]
-impl EncoderConfig {
-    #[napi(constructor)]
-    pub fn new(keys: &JsKeys) -> Self {
-        Self {
-            quality: Client::new(keys.deref()),
-            speed: Client::new(keys.deref()),
-            alpha_quality: Client::new(keys.deref()),
-            dirty_alpha: Client::new(keys.deref()),
-            threads: Client::new(keys.deref()),
-        }
-    }
-}
-
-#[napi]
-pub fn encode_image(config: EncoderConfig) -> Result<bool, Error> {
+pub fn encode_image(config: This<&EncoderConfig>) -> Result<bool, Error> {
     let EncoderConfig {
         quality,
         speed,
@@ -62,15 +41,15 @@ pub fn encode_image(config: EncoderConfig) -> Result<bool, Error> {
         threads,
     } = config;
     let enc = Encoder::new()
-        .with_quality(quality)
-        .with_speed(speed)
-        .with_alpha_quality(alpha_quality)
-        .with_alpha_color_mode(if dirty_alpha {
+        .with_quality(*quality as f32)
+        .with_speed(*speed)
+        .with_alpha_quality(*alpha_quality as f32)
+        .with_alpha_color_mode(if *dirty_alpha {
             AlphaColorMode::UnassociatedDirty
         } else {
             AlphaColorMode::UnassociatedClean
         })
-        .with_num_threads(Some(threads).filter(|&n| n > 0));
+        .with_num_threads(Some(*threads as usize).filter(|&n| n > 0));
     let img = load_rgba("./".as_bytes(), false).expect("Err 54");
     let EncodedImage {
         avif_file,
