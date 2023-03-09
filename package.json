@@ -6,16 +6,17 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "main": "./dist/index.node",
   "types": "./dist/index.d.ts",
   "devDependencies": {
-    "@napi-rs/cli": "^1.0.0"
+    "@napi-rs/cli": "^1.0.0",
+    "@types/node": "^18.14.6"
   },
   "napi": {
     "name": "ravif-js"
   },
   "scripts": {
     "build": "napi build --release",
-    "build:debug": "napi build"
+    "build:debug": "napi build",
+    "test": "node index.js"
   }
 }
