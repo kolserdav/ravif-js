@@ -1,3 +1,4 @@
+use image::{imageops::FilterType, ImageFormat};
 use imgref::ImgVec;
 use load_image::{
     export::{imgref::ImgVecKind, rgb::ComponentMap},
@@ -45,6 +46,33 @@ pub struct EncoderConfig {
     pub dest_path: String,
 }
 
+#[napi(object)]
+pub struct ScaleConfig {
+    pub width: u32,
+    pub height: u32,
+    pub file_path: String,
+    pub dest_path: String,
+}
+
+#[napi]
+pub fn scale_image(config: ScaleConfig) {
+    let ScaleConfig {
+        width,
+        height,
+        file_path,
+        dest_path,
+    } = config;
+    let img = image::open(&file_path);
+    if let Err(e) = img {
+        println!("Error open image: {}: {:?}", file_path, e);
+        return;
+    }
+    let img = img.unwrap();
+    let scaled = img.resize(width, height, FilterType::Triangle);
+    let mut output = File::create(dest_path).unwrap();
+    scaled.write_to(&mut output, ImageFormat::Png).unwrap();
+}
+
 #[napi]
 pub fn encode_image(config: EncoderConfig) -> Result<bool, Error> {
     let EncoderConfig {
@@ -73,9 +101,11 @@ pub fn encode_image(config: EncoderConfig) -> Result<bool, Error> {
         alpha_byte_size,
         ..
     } = enc.encode_rgba(img.as_ref()).expect("Err 72");
+
     let dest_file_path = Path::new(OsStr::new(&dest_path));
     File::create(dest_file_path).expect("Failed create target file");
     write(dest_file_path, avif_file).expect("Failed write target file");
+
     Ok(false)
 }
 

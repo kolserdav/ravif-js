@@ -7,8 +7,9 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
+image = { version="0.24.5", features=["avif-encoder", "avif-decoder"] }
 imgref = "1.9.4"
-load_image = "3.0.1"
+load_image = { version="3.0.1", features=["avif"] }
 napi = "2.11.2"
 napi-derive = "2.11.1"
 ravif = "0.11.1"

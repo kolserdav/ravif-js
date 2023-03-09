@@ -17,6 +17,6 @@
   "scripts": {
     "build": "napi build --release",
     "build:debug": "napi build",
-    "test": "node index.js"
+    "test": "RUST_BACKTRACE=0 node index.js"
   }
 }
